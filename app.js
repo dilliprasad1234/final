@@ -45,6 +45,7 @@ const categoryImages={
 };
 
 async function init(){
+  activeFilter="all";
   products=await fetch("products.json").then(r=>r.json());
   products=products.map(p=>({...p, telugu:p.telugu||categoryTelugu[p.label]||"క్రాకర్"}));
   buildCategories();
@@ -67,14 +68,19 @@ async function init(){
   ["cartDrawer","productModal","checkoutModal"].forEach(id=>$("#"+id).addEventListener("click",e=>{if(e.target.id===id){if(id==="cartDrawer")closeCart();if(id==="productModal")closeProduct();if(id==="checkoutModal")closeCheckout()}}));
 }
 const smartCategories=[
-  {key:"__all__",label:"All Crackers",telugu:"అన్ని క్రాకర్స్",match:()=>true,image:categoryImages["Gift / Combo Packs"]},
+  {key:"__all__",label:"All Crackers",telugu:"అన్ని క్రాకర్స్",match:()=>true,image:categoryImages["Sparklers"]},
   {key:"__family__",label:"Family Packs",telugu:"ఫ్యామిలీ ప్యాక్స్",match:p=>/family|combo/i.test(`${p.name} ${p.label}`)||p.label==="Gift / Combo Packs",image:"https://ariharancrackers.in/storage/01KZGG2RV1F0ZJHZHA909K88G2.jpg"},
-  {key:"__night__",label:"Night Crackers",telugu:"నైట్ క్రాకర్స్",match:p=>/night|sound|bomb|garland|wala/i.test(`${p.name} ${p.label}`),image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
-  {key:"__kids__",label:"Kids Collection",telugu:"పిల్లల క్రాకర్స్",match:p=>p.label==="Kids Items"||p.label==="Pencils"||/children|kids/i.test(p.name),image:categoryImages["Kids Items"]},
-  {key:"__rockets__",label:"Rockets",telugu:"రాకెట్లు",match:p=>p.label==="Rockets",image:categoryImages["Rockets"]}
+  {key:"__kids__",label:"Kids / Children",telugu:"పిల్లల క్రాకర్స్",match:p=>p.label==="Kids Items"||p.label==="Pencils"||/children|kids|joy/i.test(p.name),image:categoryImages["Kids Items"]},
+  {key:"__day__",label:"Day Crackers",telugu:"పగటి క్రాకర్స్",match:p=>["Sparklers","Flower Pots","Ground Chakkars","Twinkling Star","Pencils","Bijili"].includes(p.label),image:categoryImages["Flower Pots"]},
+  {key:"__night__",label:"Night Crackers",telugu:"రాత్రి క్రాకర్స్",match:p=>/night|sound|bomb|garland|wala|fancy out|shot/i.test(`${p.name} ${p.label}`),image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
+  {key:"__bombs__",label:"Bombs",telugu:"బాంబులు",match:p=>p.label==="Bombs"||/bomb/i.test(p.name),image:categoryImages["Bombs"]},
+  {key:"__rockets__",label:"Rockets",telugu:"రాకెట్లు",match:p=>p.label==="Rockets"||/rocket/i.test(p.name),image:categoryImages["Rockets"]}
 ];
 function uniqueCats(){return [...new Set(products.map(p=>p.label))]}
-function categoryEntry(c){return smartCategories.find(x=>x.key===c)||{key:c,label:c,telugu:categoryTelugu[c]||"క్రాకర్స్",match:p=>p.label===c,image:categoryImages[c]||products.find(p=>p.label===c)?.image||""}}
+function categoryEntry(c){
+  if(c==="all"||c==="__all__") return smartCategories[0];
+  return smartCategories.find(x=>x.key===c)||{key:c,label:c,telugu:categoryTelugu[c]||"క్రాకర్స్",match:p=>p.label===c,image:categoryImages[c]||products.find(p=>p.label===c)?.image||""};
+}
 function buildCategories(){
   const entries=[...smartCategories,...uniqueCats().map(c=>categoryEntry(c)).filter(x=>!smartCategories.some(s=>s.label===x.label))];
   const root=$("#categoryCards");
@@ -100,7 +106,7 @@ function filterCategory(c){
   render();
   document.getElementById("products").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function clearFilter(){activeFilter="__all__";syncFilterUI();render()}
+function clearFilter(){activeFilter="all";syncFilterUI();render();window.scrollTo({top:document.getElementById("products").offsetTop-20,behavior:"smooth"})}
 function openCart(){
   updateCart();
   $("#cartDrawer").classList.remove("hidden");
