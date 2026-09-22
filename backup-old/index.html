@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dilli Crackers — Premium Black & Gold Diwali 2026 celebration store. Opening offers and WhatsApp ordering.">
+  <title>Dilli Crackers | Premium Diwali 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="top-strip">
+    <div>🎇 DIWALI SALES STARTED FOR 2026</div>
+    <div>UP TO <b>90% OFF</b></div>
+    <div>MINIMUM ORDER ₹3,000</div>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#">
+      <span class="brand-mark">✦</span>
+      <span><small>DILLI</small> CRACKERS</span>
+    </a>
+    <div class="search-wrap">
+      <span>⌕</span>
+      <input id="search" type="search" placeholder="Search crackers, combos, chakkars...">
+    </div>
+    <div class="header-actions">
+      <button id="cartButton" class="icon-btn" aria-label="Cart">🛒 <b id="cartCount">0</b></button>
+    </div>
+  </header>
+
+  <nav class="category-nav">
+    <button class="cat-pill active" data-filter="all">All Categories</button>
+    <div id="categoryNav"></div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-copy">
+        <div class="eyebrow">✨ FIRST YEAR GRAND OPENING • DIWALI 2026 ✨</div>
+        <h1>PREMIUM<br><span>DIWALI CELEBRATIONS</span></h1>
+        <p class="hero-line">India's celebration season starts here.</p>
+        <div class="offer-row">
+          <div class="offer-card"><strong>UP TO 90%</strong><span>OFF</span></div>
+          <div class="offer-card"><strong>OPENING</strong><span>OFFERS</span></div>
+          <div class="offer-card"><strong>BIG</strong><span>COMBO SAVINGS</span></div>
+        </div>
+        <div class="hero-ctas">
+          <button class="gold-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">SHOP DIWALI COLLECTION</button>
+          <button class="outline-btn" onclick="filterCategory('Gift / Combo Packs')">VIEW GIFT BOXES</button>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="burst burst-a"></div><div class="burst burst-b"></div>
+        <div class="diya">🪔</div>
+        <div class="hero-sparks">✦ ✧ ✦<br>✧ ✦ ✧</div>
+        <div class="hero-badge"><b>2026</b><span>DIWALI</span><small>GRAND OPENING</small></div>
+      </div>
+    </section>
+
+    <section class="ticker">
+      <div>🔥 GRAND OPENING OFFER</div><div>•</div><div>🎁 GIFT BOXES</div><div>•</div>
+      <div>💥 PREMIUM CRACKERS</div><div>•</div><div>🇮🇳 DIWALI CELEBRATION</div><div>•</div>
+      <div>✨ UP TO 90% OFF</div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div><span class="kicker">SHOP BY CELEBRATION</span><h2>Categories</h2></div>
+        <span id="resultCount" class="result-count"></span>
+      </div>
+      <div id="categoryCards" class="category-grid"></div>
+    </section>
+
+    <section class="section" id="products">
+      <div class="section-head">
+        <div><span class="kicker">PREMIUM COLLECTION</span><h2>Diwali Crackers</h2></div>
+        <div class="sort-wrap">
+          <select id="sort">
+            <option value="featured">Featured</option>
+            <option value="priceLow">Price: Low to High</option>
+            <option value="priceHigh">Price: High to Low</option>
+            <option value="discount">Highest Discount</option>
+          </select>
+        </div>
+      </div>
+      <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <section class="opening-banner">
+      <div>
+        <span class="kicker">ONE YEAR • ONE BIG CELEBRATION</span>
+        <h2>First Year Opening Offer</h2>
+        <p>Build your Diwali order from premium crackers, gift boxes and family combos.</p>
+      </div>
+      <button class="gold-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">START SHOPPING</button>
+    </section>
+
+    <section class="trust-grid">
+      <div><b>90%</b><span>Discount offer shown in supplied 2026 source</span></div>
+      <div><b>₹3,000</b><span>Minimum order value</span></div>
+      <div><b>141</b><span>Products in this catalog</span></div>
+      <div><b>WhatsApp</b><span>Fast order enquiry</span></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-brand">DILLI CRACKERS</div>
+    <p>Premium Black & Gold Diwali 2026 storefront.</p>
+    <p class="source-note">Product names, prices and image references are based on the source catalog supplied for this build. Verify commercial rights and current prices before publishing.</p>
+  </footer>
+
+  <div id="cartDrawer" class="drawer-backdrop hidden">
+    <aside class="drawer">
+      <button class="close" onclick="closeCart()">×</button>
+      <span class="kicker">YOUR DIWALI ORDER</span>
+      <h2>Shopping Cart</h2>
+      <div id="cartItems"></div>
+      <div class="cart-summary">
+        <div><span>Items</span><b id="summaryItems">0</b></div>
+        <div><span>Total</span><b id="summaryTotal">₹0</b></div>
+        <small>Minimum order: ₹3,000</small>
+      </div>
+      <button class="checkout-btn" onclick="openCheckout()">CHECKOUT → WHATSAPP</button>
+    </aside>
+  </div>
+
+  <div id="checkoutModal" class="modal-backdrop hidden">
+    <div class="checkout-modal">
+      <button class="close" onclick="closeCheckout()">×</button>
+      <span class="kicker">ORDER DETAILS</span>
+      <h2>Where should we contact you?</h2>
+      <p>Your order will be prepared as a WhatsApp enquiry to <b>+91 70936 88688</b>.</p>
+      <label>Name<input id="customerName" placeholder="Your name" maxlength="80"></label>
+      <label>Phone number<input id="customerPhone" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number"></label>
+      <label>City / Delivery area<input id="customerCity" placeholder="Optional"></label>
+      <button class="checkout-btn" onclick="sendWhatsApp()">CONFIRM & OPEN WHATSAPP</button>
+      <small class="modal-note">WhatsApp opens with the order message pre-filled. For security, the browser/WhatsApp requires you to press Send.</small>
+    </div>
+  </div>
+
+  <div id="blastLayer" class="blast-layer"></div>
+  <script src="app.js"></script>
+</body>
+</html>

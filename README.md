@@ -1,31 +1,21 @@
-# Dilli Crackers — Premium Black & Gold Diwali 2026
+# Dilli Crackers — Diwali 2026
 
-Premium black/gold storefront with:
-- Grand Opening / First Year banner
-- 2026 Diwali promotions
-- Up to 90% offer messaging from the supplied source catalog
-- Category navigation: Sparklers, Flower Pots, Ground Chakkars, Bombs, Wala/Garlands, Gift/Combo Packs and more
-- 141 catalog products from the supplied source
-- Real product image URLs from the supplied source catalog
-- Hover blast preview and larger blast animation when clicking `+`
-- Persistent cart using browser localStorage
-- Checkout contact form
-- WhatsApp order enquiry to **+91 70936 88688**
+Static GitHub Pages storefront for Dilli Crackers.
 
-## Run locally
-
-Open `index.html` in a browser. If your browser blocks `fetch()` for local files, use VS Code Live Server.
+## Included
+- 141-product catalog
+- English + Telugu product/category names (no Tamil UI text)
+- Product prices increased by 10% from the supplied catalog and rounded to whole rupees; MRP remains unchanged
+- Real product-image references from the supplied catalog for product and category visuals
+- Live English/Telugu search
+- Category filtering and visible sorting controls
+- Product detail modal with large image and open-image action
+- Add-to-cart quantity badge on every product
+- WhatsApp order enquiry to **+91 70936 86886**
+- Premium Diwali hero/banner and responsive layout
 
 ## GitHub Pages
+Set Pages to **Deploy from a branch → dilli-crackers-premium → /(root)**.
 
-Upload the project to your branch and publish `/` from that branch.
-
-## Important WhatsApp behavior
-
-A normal website cannot silently send a WhatsApp message without user interaction. Checkout opens WhatsApp with the order message pre-filled; the customer must press **Send**.
-
-## Product images
-
-The product image URLs are from the source catalog supplied for this build and are loaded remotely. Verify that you have permission to use the third-party images and that prices/product availability are current before commercial publication.
-
-Source catalog statements used in the UI include 2026 Diwali sales, up to 90% discount, and a ₹3,000 minimum order. These are source-provided claims and should be rechecked before launch.
+## Important
+The image URLs are remote references from the supplied catalog. Verify image rights, current product availability, prices and any promotional claims before commercial launch.
