@@ -68,18 +68,32 @@ async function init(){
   ["cartDrawer","productModal","checkoutModal"].forEach(id=>$("#"+id).addEventListener("click",e=>{if(e.target.id===id){if(id==="cartDrawer")closeCart();if(id==="productModal")closeProduct();if(id==="checkoutModal")closeCheckout()}}));
 }
 const smartCategories=[
-  {key:"__all__",label:"All Crackers",telugu:"అన్ని క్రాకర్స్",match:()=>true,image:categoryImages["Sparklers"]},
-  {key:"__family__",label:"Family Packs",telugu:"ఫ్యామిలీ ప్యాక్స్",match:p=>/family|combo/i.test(`${p.name} ${p.label}`)||p.label==="Gift / Combo Packs",image:"https://ariharancrackers.in/storage/01KZGG2RV1F0ZJHZHA909K88G2.jpg"},
+  {key:"__all__",label:"All Crackers",telugu:"అన్ని క్రాకర్స్",match:()=>true,image:categoryImages["Gift / Combo Packs"]},
+  {key:"__family__",label:"Family Packs",telugu:"ఫ్యామిలీ ప్యాక్స్",match:p=>p.label==="Gift / Combo Packs"||/family|combo/i.test(p.name),image:"https://ariharancrackers.in/storage/01KZGG2RV1F0ZJHZHA909K88G2.jpg"},
   {key:"__kids__",label:"Kids / Children",telugu:"పిల్లల క్రాకర్స్",match:p=>p.label==="Kids Items"||p.label==="Pencils"||/children|kids|joy/i.test(p.name),image:categoryImages["Kids Items"]},
   {key:"__day__",label:"Day Crackers",telugu:"పగటి క్రాకర్స్",match:p=>["Sparklers","Flower Pots","Ground Chakkars","Twinkling Star","Pencils","Bijili"].includes(p.label),image:categoryImages["Flower Pots"]},
-  {key:"__night__",label:"Night Crackers",telugu:"రాత్రి క్రాకర్స్",match:p=>/night|sound|bomb|garland|wala|fancy out|shot/i.test(`${p.name} ${p.label}`),image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
+  {key:"__night__",label:"Night Crackers",telugu:"రాత్రి క్రాకర్స్",match:p=>["Sound Crackers","Bombs","Wala / Garlands","Fancy Out","Shot Items","Mini Arial Fancy","Digital Diwali","Rockets"].includes(p.label),image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
   {key:"__bombs__",label:"Bombs",telugu:"బాంబులు",match:p=>p.label==="Bombs"||/bomb/i.test(p.name),image:categoryImages["Bombs"]},
-  {key:"__rockets__",label:"Rockets",telugu:"రాకెట్లు",match:p=>p.label==="Rockets"||/rocket/i.test(p.name),image:categoryImages["Rockets"]}
+  {key:"__rockets__",label:"Rockets",telugu:"రాకెట్లు",match:p=>p.label==="Rockets"||/rocket/i.test(p.name),image:categoryImages["Rockets"]},
+  {key:"__sparklers__",label:"Sparklers",telugu:"మతాబులు",match:p=>p.label==="Sparklers",image:categoryImages["Sparklers"]},
+  {key:"__flowerpots__",label:"Flower Pots",telugu:"ఫ్లవర్ పాట్స్",match:p=>p.label==="Flower Pots",image:categoryImages["Flower Pots"]},
+  {key:"__chakkars__",label:"Ground Chakkars",telugu:"చక్రాలు",match:p=>p.label==="Ground Chakkars",image:categoryImages["Ground Chakkars"]},
+  {key:"__garlands__",label:"Garlands / Wala",telugu:"వాలా / గార్లాండ్స్",match:p=>p.label==="Wala / Garlands",image:categoryImages["Wala / Garlands"]},
+  {key:"__fancy__",label:"Fancy Crackers",telugu:"ఫ్యాన్సీ క్రాకర్స్",match:p=>["Fancy Out","Mini Arial Fancy"].includes(p.label),image:categoryImages["Fancy Out"]},
+  {key:"__shots__",label:"Shot Crackers",telugu:"షాట్ క్రాకర్స్",match:p=>p.label==="Shot Items",image:categoryImages["Shot Items"]},
+  {key:"__single__",label:"Single Crackers",telugu:"సింగిల్ క్రాకర్స్",match:p=>p.label==="Single Crackers",image:categoryImages["Single Crackers"]},
+  {key:"__bijili__",label:"Bijili",telugu:"బిజిలీ",match:p=>p.label==="Bijili",image:categoryImages["Bijili"]},
+  {key:"__digital__",label:"Digital Diwali",telugu:"డిజిటల్ దివాళి",match:p=>p.label==="Digital Diwali",image:categoryImages["Digital Diwali"]},
+  {key:"__gift__",label:"Gift / Combo Packs",telugu:"గిఫ్ట్ / కాంబో ప్యాక్స్",match:p=>p.label==="Gift / Combo Packs",image:categoryImages["Gift / Combo Packs"]}
 ];
 function uniqueCats(){return [...new Set(products.map(p=>p.label))]}
 function categoryEntry(c){
   if(c==="all"||c==="__all__") return smartCategories[0];
   return smartCategories.find(x=>x.key===c)||{key:c,label:c,telugu:categoryTelugu[c]||"క్రాకర్స్",match:p=>p.label===c,image:categoryImages[c]||products.find(p=>p.label===c)?.image||""};
+}
+function categoryVisual(c){
+  const image = c.image || categoryImages[c.label] || "";
+  return `<span class="category-image-box simple-category-image"><img loading="lazy" src="${esc(image)}" alt="${esc(c.label)}" onerror="this.style.opacity=.25"><span class="category-image-glow"></span></span>`;
 }
 function buildCategories(){
   const entries=[...smartCategories,...uniqueCats().map(c=>categoryEntry(c)).filter(x=>!smartCategories.some(s=>s.label===x.label))];
@@ -88,11 +102,14 @@ function buildCategories(){
   root.innerHTML=entries.map(c=>{
     const count=products.filter(c.match).length;
     return `<button type="button" class="category-card ${activeFilter===c.key?'selected':''}" onclick="filterCategory('${esc(c.key)}')" aria-label="${esc(c.label)} ${esc(c.telugu)}">
-      <span class="category-image-box"><img class="${c.key==='__family__'?'family-category-image':''}" src="${esc(c.image)}" alt="${esc(c.label)}" onerror="this.classList.add('img-failed')"></span>
-      <span class="category-copy"><strong>${esc(c.label)}</strong><b>${esc(c.telugu)}</b><small>${count} products</small></span>
+      <span class="category-card-inner">
+        ${categoryVisual(c)}
+        <span class="category-copy"><strong>${esc(c.label)}</strong><b>${esc(c.telugu)}</b><small>${count} products</small></span>
+      </span>
     </button>`;
   }).join("");
 }
+
 function syncFilterUI(){
   document.querySelectorAll(".category-card").forEach(b=>b.classList.toggle("selected",b.getAttribute("onclick")?.includes(`'${activeFilter}'`)));
   $("#clearFilter").classList.toggle("hidden",activeFilter==="all"||activeFilter==="__all__");
@@ -139,7 +156,7 @@ function card(p){
     <div class="product-body">
       <h3>${esc(p.name)}</h3><div class="telugu">${esc(p.telugu)}</div>
       <div class="prices"><span class="mrp">${money(p.mrp)}</span><span class="price">${money(p.price)}</span></div>
-      <div class="add-row"><span class="effect-label">Click image for details</span><button class="add-btn" title="Add to cart" onclick="addToCart(${p.id},event)">+<span class="qty-badge ${qty?'show':''}">${qty}</span></button></div>
+      <div class="add-row"><span class="effect-label">Click image for details</span><div class="card-qty ${qty?'has-qty':''}"><button class="qty-minus" title="Remove one" aria-label="Remove one" onclick="changeQty(${p.id},-1,event)">−</button><span class="card-qty-count">${qty}</span><button class="qty-plus" title="Add one" aria-label="Add one" onclick="addToCart(${p.id},event)">+</button></div></div>
     </div>
   </article>`;
 }
@@ -180,7 +197,7 @@ function updateCart(){
   if(!ids.length){$("#cartItems").innerHTML='<p style="color:#8f8069">Your Diwali cart is empty. Add your favourites.</p>';return}
   $("#cartItems").innerHTML=ids.map(id=>{const p=products.find(x=>x.id==id);if(!p)return "";return `<div class="cart-line"><img src="${esc(p.image)}" alt=""><div><strong>${esc(p.name)}</strong><div class="cart-telugu">${esc(p.telugu)}</div><div class="qty-controls"><button onclick="changeQty(${p.id},-1)">−</button><span>${cart[id]}</span><button onclick="changeQty(${p.id},1)">+</button></div></div><b>${money(p.price*cart[id])}</b></div>`}).join("");
 }
-function changeQty(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];saveCart();updateCart();syncProductQtyBadges()}
+function changeQty(id,d,e){if(e){e.preventDefault();e.stopPropagation()}cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];saveCart();updateCart();syncProductQtyBadges()}
 function saveCart(){localStorage.setItem("dilliCart",JSON.stringify(cart))}
 function closeCart(){$("#cartDrawer").classList.add("hidden");document.body.classList.remove("no-scroll")}
 function openCheckout(){if(!Object.keys(cart).length){alert("Please add at least one product.");return}closeCart();$("#checkoutModal").classList.remove("hidden");$("#customerName").focus()}
