@@ -56,27 +56,38 @@ async function init(){
     render();
   });
   $("#sort").addEventListener("change",render);
-  $("#cartButton").addEventListener("click",()=>$("#cartDrawer").classList.remove("hidden"));
+  // Use an explicit function + touch-friendly button so the cart works reliably on desktop, Android and iOS.
+  $("#cartButton").addEventListener("click",openCart);
+  $("#cartButton").addEventListener("touchend",e=>{e.preventDefault();openCart()},{passive:false});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCart();closeProduct();closeCheckout()}});
+  ["cartDrawer","productModal","checkoutModal"].forEach(id=>$("#"+id).addEventListener("click",e=>{if(e.target.id===id){if(id==="cartDrawer")closeCart();if(id==="productModal")closeProduct();if(id==="checkoutModal")closeCheckout()}}));
 }
+const smartCategories=[
+  {key:"__all__",label:"All Crackers",telugu:"అన్ని క్రాకర్స్",match:()=>true,image:categoryImages["Gift / Combo Packs"]},
+  {key:"__family__",label:"Family Packs",telugu:"ఫ్యామిలీ ప్యాక్స్",match:p=>/family|combo/i.test(p.name),image:"https://ariharancrackers.in/storage/01KZGG2RV1F0ZJHZHA909K88G2.jpg"},
+  {key:"__night__",label:"Night Crackers",telugu:"నైట్ క్రాకర్స్",match:p=>/night/i.test(p.name)||p.label==="Shot Items",image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
+  {key:"__kids__",label:"Kids Collection",telugu:"పిల్లల క్రాకర్స్",match:p=>p.label==="Kids Items"||/children|kids/i.test(p.name),image:categoryImages["Kids Items"]},
+  {key:"__rockets__",label:"Rockets",telugu:"రాకెట్లు",match:p=>p.label==="Rockets",image:categoryImages["Rockets"]}
+];
 function uniqueCats(){return [...new Set(products.map(p=>p.label))]}
+function categoryEntry(c){return smartCategories.find(x=>x.key===c)||{key:c,label:c,telugu:categoryTelugu[c]||"క్రాకర్స్",match:p=>p.label===c,image:categoryImages[c]||products.find(p=>p.label===c)?.image||""}}
 function buildCategories(){
-  const cats=uniqueCats();
-  // Top sticky category bar is intentionally removed to keep the first screen clean.
+  const entries=[...smartCategories,...uniqueCats().map(c=>categoryEntry(c)).filter(x=>!smartCategories.some(s=>s.label===x.label))];
   $("#categoryNav").innerHTML="";
-  $("#categoryCards").innerHTML=cats.map(c=>{
-    const count=products.filter(p=>p.label===c).length;
-    const img=categoryImages[c]||products.find(p=>p.label===c)?.image||"";
-    return `<button class="category-card ${activeFilter===c?'selected':''}" onclick="filterCategory('${esc(c)}')">
-      <img src="${esc(img)}" alt="${esc(c)}" onerror="this.classList.add('img-failed')">
+  $("#categoryCards").innerHTML=entries.map(c=>{
+    const count=products.filter(c.match).length;
+    return `<button class="category-card ${activeFilter===c.key?'selected':''}" onclick="filterCategory('${esc(c.key)}')" aria-label="${esc(c.label)} ${esc(c.telugu)}">
+      <img class="${c.key==='__family__'?'family-category-image':''}" src="${esc(c.image)}" alt="${esc(c.label)}" onerror="this.classList.add('img-failed')">
       <span class="category-shade"></span>
-      <span class="category-copy"><strong>${esc(c)}</strong><b>${esc(categoryTelugu[c]||"క్రాకర్స్")}</b><small>${count} products</small></span>
+      <span class="category-copy"><strong>${esc(c.label)}</strong><b>${esc(c.telugu)}</b><small>${count} products</small></span>
     </button>`;
   }).join("");
 }
 function syncFilterUI(){
-  document.querySelectorAll(".category-card").forEach(b=>b.classList.toggle("selected",b.querySelector("strong")?.textContent===activeFilter));
-  $("#clearFilter").classList.toggle("hidden",activeFilter==="all");
-  $("#activeFilterLabel").textContent=activeFilter==="all"?"All products":activeFilter+" / "+(categoryTelugu[activeFilter]||"");
+  document.querySelectorAll(".category-card").forEach(b=>b.classList.toggle("selected",b.getAttribute("onclick")?.includes(`'${activeFilter}'`)));
+  $("#clearFilter").classList.toggle("hidden",activeFilter==="all"||activeFilter==="__all__");
+  const c=categoryEntry(activeFilter);
+  $("#activeFilterLabel").textContent=(activeFilter==="all"||activeFilter==="__all__")?"All products":c.label+" / "+c.telugu;
 }
 function filterCategory(c){
   activeFilter=c;
@@ -85,12 +96,19 @@ function filterCategory(c){
   render();
   document.getElementById("products").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function clearFilter(){activeFilter="all";syncFilterUI();render()}
+function clearFilter(){activeFilter="__all__";syncFilterUI();render()}
+function openCart(){
+  updateCart();
+  $("#cartDrawer").classList.remove("hidden");
+  document.body.classList.add("no-scroll");
+}
 function render(){
   const q=normalize($("#search").value);
   let list=products.filter(p=>{
     const hay=normalize([p.name,p.telugu,p.label,p.category].join(" "));
-    return (activeFilter==="all"||p.label===activeFilter) && (!q||hay.includes(q));
+    const c=categoryEntry(activeFilter);
+    const categoryMatch=activeFilter==="all"||activeFilter==="__all__"||c.match(p);
+    return categoryMatch && (!q||hay.includes(q));
   });
   const sort=$("#sort").value;
   if(sort==="priceLow") list.sort((a,b)=>a.price-b.price);
@@ -103,7 +121,7 @@ function render(){
 function card(p){
   const qty=cart[p.id]||0;
   return `<article class="product">
-    <div class="product-img" data-effect="${esc(p.effect)}" onmouseenter="previewBlast(event,'${esc(p.effect)}')" onclick="openProduct(${p.id})">
+    <div class="product-img ${/family|combo/i.test(p.name)?"family-product-img":""}" data-effect="${esc(p.effect)}" onmouseenter="previewBlast(event,'${esc(p.effect)}')" onclick="openProduct(${p.id})">
       <span class="discount">${p.discount}% OFF</span>
       <img loading="lazy" src="${esc(p.image)}" alt="${esc(p.name)}" onerror="this.style.opacity=.35">
       <span class="view-image">VIEW DETAILS ↗</span>
@@ -140,7 +158,7 @@ function blast(x,y,effect,count=18,small=false){
 function openProduct(id){
   const p=products.find(x=>x.id===id); if(!p)return;
   const qty=cart[id]||0;
-  $("#productModalContent").innerHTML=`<div class="detail-image"><img src="${esc(p.image)}" alt="${esc(p.name)}"><a href="${esc(p.image)}" target="_blank" rel="noopener">OPEN IMAGE ↗</a></div>
+  $("#productModalContent").innerHTML=`<div class="detail-image ${/family|combo/i.test(p.name)?"family-detail-image":""}"><img src="${esc(p.image)}" alt="${esc(p.name)}"><a href="${esc(p.image)}" target="_blank" rel="noopener">OPEN IMAGE ↗</a></div>
     <div class="detail-info"><span class="discount detail-discount">${p.discount}% OFF</span><div class="detail-category">${esc(p.label)} · ${esc(categoryTelugu[p.label]||"")}</div><h2>${esc(p.name)}</h2><div class="detail-telugu">${esc(p.telugu)}</div><div class="detail-price"><span class="mrp">${money(p.mrp)}</span><b>${money(p.price)}</b></div><p>Premium Diwali product from the catalog. Add your required quantity and send the order enquiry on WhatsApp.</p><div class="detail-qty"><button onclick="changeQty(${p.id},-1);openProduct(${p.id})">−</button><b>${qty}</b><button onclick="addFromDetail(${p.id})">+</button></div><button class="gold-btn" onclick="addFromDetail(${p.id})">ADD TO CART</button></div>`;
   $("#productModal").classList.remove("hidden");
 }
@@ -154,7 +172,7 @@ function updateCart(){
 }
 function changeQty(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];saveCart();updateCart();syncProductQtyBadges()}
 function saveCart(){localStorage.setItem("dilliCart",JSON.stringify(cart))}
-function closeCart(){$("#cartDrawer").classList.add("hidden")}
+function closeCart(){$("#cartDrawer").classList.add("hidden");document.body.classList.remove("no-scroll")}
 function openCheckout(){if(!Object.keys(cart).length){alert("Please add at least one product.");return}closeCart();$("#checkoutModal").classList.remove("hidden");$("#customerName").focus()}
 function closeCheckout(){$("#checkoutModal").classList.add("hidden")}
 function sendWhatsApp(){

@@ -1,19 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes"><meta name="theme-color" content="#070707"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="Dilli Crackers — Diwali 2026 premium crackers, festive offers and WhatsApp ordering.">
   <title>Dilli Crackers | Happy Diwali 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"><link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
   <div class="top-strip"><div>🎇 DIWALI SALES STARTED FOR 2026</div><div>UP TO <b>90% OFF</b></div><div>MINIMUM ORDER ₹3,000</div></div>
   <header class="site-header">
     <a class="brand" href="#"><span class="brand-mark">✦</span><span><small>DILLI</small> CRACKERS</span></a>
     <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Search in English or Telugu — crackers, combos, rockets..."></div>
-    <div class="header-actions"><button id="cartButton" class="icon-btn" aria-label="Cart">🛒 <b id="cartCount">0</b></button></div>
+    <div class="header-actions"><button id="cartButton" class="icon-btn cart-button" type="button" aria-label="Open shopping cart" onclick="openCart()">🛒 <span>Cart</span> <b id="cartCount">0</b></button></div>
   </header>
 
   <main>
@@ -38,7 +38,7 @@
     <section class="ticker"><div>🔥 GRAND OPENING OFFER</div><div>•</div><div>🎁 GIFT BOXES</div><div>•</div><div>💥 PREMIUM CRACKERS</div><div>•</div><div>🇮🇳 DIWALI CELEBRATION</div><div>•</div><div>✨ FESTIVE SAVINGS</div></section>
 
     <section class="section category-section">
-      <div class="section-head"><div><span class="kicker">SHOP BY CELEBRATION</span><h2>Cracker Categories <small>క్రాకర్ కేటగిరీలు</small></h2></div><span id="resultCount" class="result-count"></span></div>
+      <div class="section-head"><div><span class="kicker">SHOP BY CATEGORY</span><h2>All Cracker Categories <small>అన్ని క్రాకర్ కేటగిరీలు</small></h2><p class="category-help">Choose a category to see only the relevant products.</p></div><span id="resultCount" class="result-count"></span></div>
       <div id="categoryCards" class="category-grid"></div>
     </section>
 
@@ -53,7 +53,7 @@
     <section class="trust-grid"><div><b>90%</b><span>Discount offer shown in supplied 2026 source</span></div><div><b>₹3,000</b><span>Minimum order value</span></div><div><b>141</b><span>Products in this catalog</span></div><div><b>WhatsApp</b><span>Order enquiry</span></div></section>
   </main>
 
-  <footer><div class="footer-brand">DILLI CRACKERS</div><p>🎉 Happy Diwali • Welcome • शुभ दिपावली • వెలుగుల పండుగ శుభాకాంక్షలు</p><p class="source-note">Product names, prices and image references are based on the source catalog supplied for this build. Verify commercial image rights and current prices before publishing.</p></footer>
+  <footer><div class="footer-brand">DILLI CRACKERS</div><p>🎉 Happy Diwali • Welcome • వెలుగుల పండుగ శుభాకాంక్షలు</p><p class="source-note">Product names, prices and image references are based on the source catalog supplied for this build. Verify commercial image rights and current prices before publishing.</p></footer>
 
   <div id="cartDrawer" class="drawer-backdrop hidden"><aside class="drawer"><button class="close" onclick="closeCart()">×</button><span class="kicker">YOUR DIWALI ORDER</span><h2>Shopping Cart</h2><div id="cartItems"></div><div class="cart-summary"><div><span>Items</span><b id="summaryItems">0</b></div><div><span>Total</span><b id="summaryTotal">₹0</b></div><small>Minimum order: ₹3,000</small></div><button class="checkout-btn" onclick="openCheckout()">CHECKOUT → WHATSAPP</button></aside></div>
 
