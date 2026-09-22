@@ -63,7 +63,13 @@ async function init(){
     cartBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openCart();});
     cartBtn.addEventListener("touchend",e=>{e.preventDefault();e.stopPropagation();openCart();},{passive:false});
   }
-  document.addEventListener("click",e=>{if(e.target.closest("#cartButton")){e.preventDefault();openCart();}});
+  document.addEventListener("click",e=>{
+    if(e.target.closest("#cartButton")){e.preventDefault();e.stopPropagation();openCart();return;}
+    const plus=e.target.closest(".qty-plus");
+    if(plus){e.preventDefault();e.stopPropagation();const id=Number(plus.closest(".product")?.dataset.productId);if(id)addToCart(id,e);return;}
+    const minus=e.target.closest(".qty-minus");
+    if(minus){e.preventDefault();e.stopPropagation();const id=Number(minus.closest(".product")?.dataset.productId);if(id)changeQty(id,-1,e);return;}
+  });
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCart();closeProduct();closeCheckout()}});
   ["cartDrawer","productModal","checkoutModal"].forEach(id=>$("#"+id).addEventListener("click",e=>{if(e.target.id===id){if(id==="cartDrawer")closeCart();if(id==="productModal")closeProduct();if(id==="checkoutModal")closeCheckout()}}));
 }
@@ -147,7 +153,7 @@ function render(){
 }
 function card(p){
   const qty=cart[p.id]||0;
-  return `<article class="product">
+  return `<article class="product" data-product-id="${p.id}">
     <div class="product-img ${/family|combo/i.test(p.name)?"family-product-img":""}" data-effect="${esc(p.effect)}" onmouseenter="previewBlast(event,'${esc(p.effect)}')" onclick="openProduct(${p.id})">
       <span class="discount">${p.discount}% OFF</span>
       <img loading="lazy" src="${esc(p.image)}" alt="${esc(p.name)}" onerror="this.style.opacity=.35">
@@ -156,18 +162,18 @@ function card(p){
     <div class="product-body">
       <h3>${esc(p.name)}</h3><div class="telugu">${esc(p.telugu)}</div>
       <div class="prices"><span class="mrp">${money(p.mrp)}</span><span class="price">${money(p.price)}</span></div>
-      <div class="add-row"><span class="effect-label">Click image for details</span><div class="card-qty ${qty?'has-qty':''}"><button class="qty-minus" title="Remove one" aria-label="Remove one" onclick="changeQty(${p.id},-1,event)">−</button><span class="card-qty-count">${qty}</span><button class="qty-plus" title="Add one" aria-label="Add one" onclick="addToCart(${p.id},event)">+</button></div></div>
+      <div class="add-row"><span class="effect-label">Click image for details</span><div class="card-qty ${qty?'has-qty':''}"><button type="button" class="qty-minus" title="Remove one" aria-label="Remove one">−</button><span class="card-qty-count">${qty}</span><button type="button" class="qty-plus" title="Add one" aria-label="Add one">+</button></div></div>
     </div>
   </article>`;
 }
 function syncProductQtyBadges(){
-  document.querySelectorAll(".add-btn").forEach(btn=>{
-    const article=btn.closest(".product");
-    const name=article?.querySelector("h3")?.textContent;
-    const p=products.find(x=>x.name===name);
-    const q=p?(cart[p.id]||0):0;
-    const badge=btn.querySelector(".qty-badge");
-    if(badge){badge.textContent=q;badge.classList.toggle("show",q>0)}
+  document.querySelectorAll(".product[data-product-id]").forEach(article=>{
+    const id=Number(article.dataset.productId);
+    const q=cart[id]||0;
+    const wrap=article.querySelector(".card-qty");
+    const count=article.querySelector(".card-qty-count");
+    if(count) count.textContent=q;
+    if(wrap) wrap.classList.toggle("has-qty",q>0);
   });
 }
 function addToCart(id,e){
