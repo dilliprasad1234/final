@@ -57,28 +57,32 @@ async function init(){
   });
   $("#sort").addEventListener("change",render);
   // Use an explicit function + touch-friendly button so the cart works reliably on desktop, Android and iOS.
-  $("#cartButton").addEventListener("click",openCart);
-  $("#cartButton").addEventListener("touchend",e=>{e.preventDefault();openCart()},{passive:false});
+  const cartBtn=$("#cartButton");
+  if(cartBtn){
+    cartBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openCart();});
+    cartBtn.addEventListener("touchend",e=>{e.preventDefault();e.stopPropagation();openCart();},{passive:false});
+  }
+  document.addEventListener("click",e=>{if(e.target.closest("#cartButton")){e.preventDefault();openCart();}});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCart();closeProduct();closeCheckout()}});
   ["cartDrawer","productModal","checkoutModal"].forEach(id=>$("#"+id).addEventListener("click",e=>{if(e.target.id===id){if(id==="cartDrawer")closeCart();if(id==="productModal")closeProduct();if(id==="checkoutModal")closeCheckout()}}));
 }
 const smartCategories=[
   {key:"__all__",label:"All Crackers",telugu:"అన్ని క్రాకర్స్",match:()=>true,image:categoryImages["Gift / Combo Packs"]},
-  {key:"__family__",label:"Family Packs",telugu:"ఫ్యామిలీ ప్యాక్స్",match:p=>/family|combo/i.test(p.name),image:"https://ariharancrackers.in/storage/01KZGG2RV1F0ZJHZHA909K88G2.jpg"},
-  {key:"__night__",label:"Night Crackers",telugu:"నైట్ క్రాకర్స్",match:p=>/night/i.test(p.name)||p.label==="Shot Items",image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
-  {key:"__kids__",label:"Kids Collection",telugu:"పిల్లల క్రాకర్స్",match:p=>p.label==="Kids Items"||/children|kids/i.test(p.name),image:categoryImages["Kids Items"]},
+  {key:"__family__",label:"Family Packs",telugu:"ఫ్యామిలీ ప్యాక్స్",match:p=>/family|combo/i.test(`${p.name} ${p.label}`)||p.label==="Gift / Combo Packs",image:"https://ariharancrackers.in/storage/01KZGG2RV1F0ZJHZHA909K88G2.jpg"},
+  {key:"__night__",label:"Night Crackers",telugu:"నైట్ క్రాకర్స్",match:p=>/night|sound|bomb|garland|wala/i.test(`${p.name} ${p.label}`),image:"https://ariharancrackers.in/storage/01KZWV63RBKSRJ1QQZ01TCKB9Y.jpg"},
+  {key:"__kids__",label:"Kids Collection",telugu:"పిల్లల క్రాకర్స్",match:p=>p.label==="Kids Items"||p.label==="Pencils"||/children|kids/i.test(p.name),image:categoryImages["Kids Items"]},
   {key:"__rockets__",label:"Rockets",telugu:"రాకెట్లు",match:p=>p.label==="Rockets",image:categoryImages["Rockets"]}
 ];
 function uniqueCats(){return [...new Set(products.map(p=>p.label))]}
 function categoryEntry(c){return smartCategories.find(x=>x.key===c)||{key:c,label:c,telugu:categoryTelugu[c]||"క్రాకర్స్",match:p=>p.label===c,image:categoryImages[c]||products.find(p=>p.label===c)?.image||""}}
 function buildCategories(){
   const entries=[...smartCategories,...uniqueCats().map(c=>categoryEntry(c)).filter(x=>!smartCategories.some(s=>s.label===x.label))];
-  $("#categoryNav").innerHTML="";
-  $("#categoryCards").innerHTML=entries.map(c=>{
+  const root=$("#categoryCards");
+  if(!root)return;
+  root.innerHTML=entries.map(c=>{
     const count=products.filter(c.match).length;
-    return `<button class="category-card ${activeFilter===c.key?'selected':''}" onclick="filterCategory('${esc(c.key)}')" aria-label="${esc(c.label)} ${esc(c.telugu)}">
-      <img class="${c.key==='__family__'?'family-category-image':''}" src="${esc(c.image)}" alt="${esc(c.label)}" onerror="this.classList.add('img-failed')">
-      <span class="category-shade"></span>
+    return `<button type="button" class="category-card ${activeFilter===c.key?'selected':''}" onclick="filterCategory('${esc(c.key)}')" aria-label="${esc(c.label)} ${esc(c.telugu)}">
+      <span class="category-image-box"><img class="${c.key==='__family__'?'family-category-image':''}" src="${esc(c.image)}" alt="${esc(c.label)}" onerror="this.classList.add('img-failed')"></span>
       <span class="category-copy"><strong>${esc(c.label)}</strong><b>${esc(c.telugu)}</b><small>${count} products</small></span>
     </button>`;
   }).join("");
